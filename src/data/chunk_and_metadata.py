@@ -3,7 +3,7 @@ import json
 
 
 def get_article_number(text):
-    """Extract article number from article text."""
+
     match = re.search(r'مادة\s*[\[\(]?\s*(\d+)', text)
     if match:
         return int(match.group(1))
@@ -38,7 +38,7 @@ def build_chunks(articles, law_name="قانون العقوبات المصري"):
 
 
 if __name__ == "__main__":
-    # Load articles from previous step
+
     import sys
 
     sys.path.append(".")

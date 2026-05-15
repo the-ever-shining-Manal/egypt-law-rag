@@ -2,9 +2,7 @@ import re
 
 
 def extract_articles(text):
-    """
-    Split Egyptian Penal Code into articles (مواد)
-    """
+
     pattern = r'(مادة\s*\d+.*?)(?=مادة\s*\d+|$)'
 
     matches = re.findall(pattern, text, re.DOTALL)
@@ -12,18 +10,18 @@ def extract_articles(text):
     articles = []
     for m in matches:
         m = m.strip()
-        if len(m) > 50:  # remove noise / headers
+        if len(m) > 50:
             articles.append(m)
 
     return articles
 
 
 if __name__ == "__main__":
-    # READ CLEANED TEXT
+
     with open(r"C:\multi-agents\egypt-law-rag\data\cleaned_text.txt", "r", encoding="utf-8") as f:
         text = f.read()
 
-    # EXTRACT ARTICLES
+
     articles = extract_articles(text)
 
     print(f"Found {len(articles)} articles")
@@ -34,7 +32,7 @@ if __name__ == "__main__":
         print(a[:300])
         print("---")
 
-    # SAVE OUTPUT
+
     with open(r"C:\multi-agents\egypt-law-rag\data\articles.txt", "w", encoding="utf-8") as f:
         for i, a in enumerate(articles):
             f.write(f"=== Article {i + 1} ===\n{a}\n\n")
