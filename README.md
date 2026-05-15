@@ -66,3 +66,64 @@ QDRANT_COLLECTION="legal_articles"
 
 ### 3. إضافة ملف الـ PDF
 ضع ملف القانون في مجلد `data/`:
+egypt-law-rag/data/qanun_al_uqubat.pdf
+
+### 4. تشغيل النظام
+```bash
+cd egypt-law-rag
+docker compose up --build
+```
+
+هذا الأمر سيقوم بتشغيل ثلاثة containers دفعة واحدة:
+| الخدمة | الرابط |
+|--------|--------|
+| Frontend (Nginx) | http://localhost |
+| Backend (FastAPI) | http://localhost:8000 |
+| Qdrant Dashboard | http://localhost:6333/dashboard |
+
+### 5. data embedding
+عند أول تشغيل، إذا كان ملف `output/chunks.json` موجوداً، سيقوم النظام بالفهرسة تلقائياً.
+وإلا، استخدم زر **"دورة كاملة"** في واجهة المستخدم لاستخراج وفهرسة الـ PDF.
+
+---
+
+## 💻 التشغيل المحلي بدون Docker (Alternative)
+
+### 1. تثبيت المكتبات
+```bash
+python -m venv .venv
+source .venv/bin/activate  # في الويندوز: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 2. تشغيل Qdrant محلياً
+```bash
+docker run -p 6333:6333 qdrant/qdrant
+```
+
+### 3. تشغيل الخادم
+```bash
+uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### 4. فتح الواجهة
+افتح ملف `frontend/index.html` مباشرةً في المتصفح أو استخدم Live Server في VS Code.
+
+## 🔌 مسارات الـ API (Endpoints)
+
+| Method | Endpoint | الوصف |
+|--------|----------|-------|
+| GET | `/health` | فحص حالة الخادم وإعدادات Qdrant |
+| POST | `/query` | إرسال سؤال قانوني واستلام الإجابة |
+| POST | `/documents/upload` | رفع ملف PDF لمعالجته |
+| POST | `/pipeline/ingest` | استخراج وتنظيف نصوص الـ PDF |
+| POST | `/pipeline/index` | تحويل النصوص إلى Vectors وحفظها |
+| POST | `/pipeline/full` | تشغيل الدورة الكاملة |
+
+## ⚠️ ملاحظات هامة (Important Notes)
+
+- لا ترفع ملف `.env` على GitHub — يحتوي على مفاتيح سرية.
+- النظام معتمد على قوانين محددة تم أرشفتها مسبقاً (مثل قانون العقوبات).
+- تم ضبط النموذج للإجابة حصراً باستخدام النصوص المسترجعة لمنع الهلوسة (Hallucinations).
+- إذا لم يجد النظام سياقاً قانونياً كافياً، يعتذر عن الإجابة بدلاً من اختراع معلومات.
+EOF
