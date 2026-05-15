@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المستشار القانوني - Egypt Law RAG</title>
+    <!-- Google Fonts: Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-background">
+        <!-- Animated Background Elements -->
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="app-container glass-panel">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fa-solid fa-scale-balanced"></i> المستشار القانوني</h2>
+                <p class="subtitle">نظام ذكاء اصطناعي للقانون المصري</p>
+            </div>
+
+            <div class="sidebar-section">
+                <h3><i class="fa-solid fa-file-pdf"></i> رفع مستند جديد</h3>
+                <form id="upload-form" class="upload-form">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="pdf-file" accept=".pdf" required>
+                        <label for="pdf-file" class="btn-secondary">
+                            <i class="fa-solid fa-upload"></i> اختر ملف PDF
+                        </label>
+                        <span id="file-name" class="file-name">لم يتم اختيار ملف</span>
+                    </div>
+                    <button type="submit" class="btn-primary" id="upload-btn">
+                        <span>رفع ومعالجة</span>
+                        <i class="fa-solid fa-spinner fa-spin hidden" id="upload-spinner"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="sidebar-section">
+                <h3><i class="fa-solid fa-gears"></i> إدارة النظام</h3>
+                <div class="pipeline-actions">
+                    <button class="btn-outline" id="btn-ingest">
+                        <i class="fa-solid fa-database"></i> استخراج وتقطيع
+                    </button>
+                    <button class="btn-outline" id="btn-index">
+                        <i class="fa-solid fa-vector-square"></i> الفهرسة
+                    </button>
+                    <button class="btn-outline" id="btn-full-pipeline">
+                        <i class="fa-solid fa-bolt"></i> دورة كاملة
+                    </button>
+                </div>
+            </div>
+            
+            <div id="system-status" class="system-status">
+                <p><i class="fa-solid fa-circle-check"></i> النظام جاهز</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="chat-header">
+                <div class="header-info">
+                    <h1>المساعد القانوني الذكي</h1>
+                    <span class="status-indicator online">متصل</span>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" title="مسح المحادثة" id="btn-clear-chat">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="chat-container" id="chat-container">
+                <!-- Welcome Message -->
+                <div class="message bot-message">
+                    <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+                    <div class="message-content">
+                        <p>أهلاً بك! أنا مساعدك القانوني الذكي للقانون المصري. يمكنك سؤالي عن أي استشارة قانونية وسأقوم بالرد عليك مدعوماً بالمصادر من نصوص القانون.</p>
+                        <div class="suggested-questions">
+                            <button class="suggestion-btn">ما هي عقوبة السرقة بالإكراه؟</button>
+                            <button class="suggestion-btn">متى يعتبر القتل عمداً؟</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <form id="query-form" class="query-form">
+                    <button type="submit" class="btn-send" id="send-btn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                    <input type="text" id="question-input" placeholder="اكتب سؤالك القانوني هنا..." required autocomplete="off">
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
