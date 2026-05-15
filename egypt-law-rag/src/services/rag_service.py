@@ -1,5 +1,3 @@
-import os
-
 from openai import OpenAI
 
 from src.config import CHAT_MODEL, DEFAULT_TOP_K, OPENAI_API_KEY

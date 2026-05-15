@@ -1,18 +1,39 @@
 import shutil
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from src.config import UPLOADS_DIR
+from src.config import CHUNKS_PATH, COLLECTION_NAME, UPLOADS_DIR
 from src.pipeline import run_full_pipeline, run_index, run_ingest
 from src.services.rag_service import RAGService
+from src.vector_store import get_qdrant
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        info = get_qdrant().get_collection(COLLECTION_NAME)
+        if getattr(info, "points_count", 0) == 0:
+            raise ValueError("Collection is empty")
+        print("✅ Collection already exists and has points, skipping auto-index.")
+    except Exception:
+        if CHUNKS_PATH.exists():
+            print("⚡ Collection not found or empty — auto-indexing chunks...")
+            run_index()
+            print("✅ Auto-indexing complete.")
+        else:
+            print("⚠️  No chunks.json found. Run the full pipeline first.")
+    yield
+
 
 app = FastAPI(
     title="Egypt Law RAG API",
     description="Arabic legal Q&A with automated PDF ingestion pipeline",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -61,7 +82,6 @@ def query(req: QueryRequest):
 
 @app.post("/pipeline/ingest", response_model=PipelineResponse)
 def pipeline_ingest():
-    """Run extract -> clean -> chunk on the default PDF."""
     try:
         result = run_ingest()
         return PipelineResponse(
@@ -75,7 +95,6 @@ def pipeline_ingest():
 
 @app.post("/pipeline/index", response_model=PipelineResponse)
 def pipeline_index():
-    """Embed chunks and store in Qdrant."""
     try:
         result = run_index()
         return PipelineResponse(
@@ -89,26 +108,14 @@ def pipeline_index():
 
 @app.post("/pipeline/full", response_model=PipelineResponse)
 def pipeline_full(background_tasks: BackgroundTasks, background: bool = False):
-    """Run full ingest + index pipeline."""
     if background:
         background_tasks.add_task(run_full_pipeline)
-        return PipelineResponse(
-            status="started",
-            message="Full pipeline started in background",
-        )
+        return PipelineResponse(status="started", message="Full pipeline started in background")
     try:
         result = run_full_pipeline()
-        return PipelineResponse(
-            status="completed",
-            message="Full pipeline completed",
-            details=result,
-        )
+        return PipelineResponse(status="completed", message="Full pipeline completed", details=result)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
-
-
-def _process_uploaded_pdf(pdf_path: Path, law_name: str):
-    run_full_pipeline(pdf_path=pdf_path, law_name=law_name)
 
 
 @app.post("/documents/upload", response_model=PipelineResponse)
@@ -118,11 +125,6 @@ async def upload_document(
     law_name: str = "قانون العقوبات المصري",
     background: bool = True,
 ):
-    """
-    Upload a new PDF and trigger the full pipeline.
-
-    Flow: upload -> OCR/extract -> clean -> chunk -> embed -> Qdrant
-    """
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported")
 
@@ -133,7 +135,7 @@ async def upload_document(
         shutil.copyfileobj(file.file, buffer)
 
     if background:
-        background_tasks.add_task(_process_uploaded_pdf, dest, law_name)
+        background_tasks.add_task(run_full_pipeline, pdf_path=dest, law_name=law_name)
         return PipelineResponse(
             status="started",
             message=f"Pipeline started for {file.filename}",
