@@ -19,3 +19,4 @@ output/
 # Scratch files
 scratch.py
 scratch2.py
+.env
