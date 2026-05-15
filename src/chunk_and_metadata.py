@@ -11,9 +11,7 @@ def get_article_number(text):
 
 
 def detect_chapter(text):
-    """Try to detect which chapter (باب) or section (قسم) this belongs to."""
-    # You can build a map manually or detect from context
-    # For now return a placeholder
+
     return "غير محدد"
 
 
@@ -49,7 +47,7 @@ if __name__ == "__main__":
     with open("C:\multi-agents\egypt-law-rag\data\cleaned_text.txt", "r", encoding="utf-8") as f:
         text = f.read()
 
-    # Re-run extraction here to keep it self-contained
+
     pattern = r'(مادة\s*[\[\(]?\s*\d+[\]\)]?\s*(?:مكررًا|مكرر|مكررا)?(?:\s*[\(\[]\s*\d*\s*[\)\]])?\s*.*?)(?=مادة\s*[\[\(]?\s*\d+|$)'
     matches = re.findall(pattern, text, re.DOTALL)
     articles = [m.strip() for m in matches if len(m.strip()) > 30]
