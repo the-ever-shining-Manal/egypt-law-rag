@@ -5,7 +5,7 @@
 <img width="1440" height="681" alt="Screenshot 2026-05-15 at 10 15 22 PM" src="https://github.com/user-attachments/assets/8d4e8f4f-f37b-47d7-a542-c4b3b0deaf27" />
 
 ## ✨ المميزات (Features)
-=======
+
 
 # المستشار القانوني - Egypt Law RAG ⚖️
 
